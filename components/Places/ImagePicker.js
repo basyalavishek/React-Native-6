@@ -6,6 +6,7 @@ import {
 import { useState } from "react";
 import { Alert, Button, View, Image, Text, StyleSheet } from "react-native";
 import { Colors } from "../../constants/colors";
+import OutlinedButton from "../UI/OutlinedButton";
 
 const ImagePicker = () => {
   const [cameraPermissionInformation, requestPermission] =
@@ -46,13 +47,14 @@ const ImagePicker = () => {
 
   if (pickedImage) {
     imagePreview = <Image style={styles.image} source={{ uri: pickedImage }} />;
-    console.log(imagePreview);
   }
 
   return (
     <View>
       <View style={styles.imagePreview}>{imagePreview}</View>
-      <Button title="Take Image" onPress={takeImageHandler} />
+      <OutlinedButton icon="camera" onPress={takeImageHandler}>
+        Take image
+      </OutlinedButton>
     </View>
   );
 };
