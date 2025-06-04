@@ -3,21 +3,24 @@ import {
   useCameraPermissions,
   PermissionStatus,
 } from "expo-image-picker";
-import { Alert, Button, View } from "react-native";
+import { useState } from "react";
+import { Alert, Button, View, Image, Text, StyleSheet } from "react-native";
+import { Colors } from "../../constants/colors";
 
 const ImagePicker = () => {
-  const [cameraPermissioiinInformation, requestPermission] = useCameraPermissions();
+  const [cameraPermissionInformation, requestPermission] =
+    useCameraPermissions();
   //cameraPermissionInformation: the current permission state
   //requestPermission: a function to request permission from the user
 
+  const [pickedImage, setPickedImage] = useState();
+
   async function verifyPermissions() {
-    if (
-      cameraPermissioiinInformation.status === PermissionStatus.UNDETERMINED
-    ) {
+    if (cameraPermissionInformation.status === PermissionStatus.UNDETERMINED) {
       const permissionResponse = await requestPermission();
       return permissionResponse.granted;
     }
-    if (cameraPermissioiinInformation.status === PermissionStatus.DENIED) {
+    if (cameraPermissionInformation.status === PermissionStatus.DENIED) {
       Alert.alert("Permission not allowed", "You need to allow camera access");
       return false;
     }
@@ -36,15 +39,38 @@ const ImagePicker = () => {
       aspect: [16, 9],
       quality: 0.5,
     });
-    console.log(image);
+    setPickedImage(image.assets[0].uri);
+  }
+
+  let imagePreview = <Text>No image taken yet</Text>;
+
+  if (pickedImage) {
+    imagePreview = <Image style={styles.image} source={{ uri: pickedImage }} />;
+    console.log(imagePreview);
   }
 
   return (
     <View>
-      <View></View>
+      <View style={styles.imagePreview}>{imagePreview}</View>
       <Button title="Take Image" onPress={takeImageHandler} />
     </View>
   );
 };
 
 export default ImagePicker;
+
+const styles = StyleSheet.create({
+  imagePreview: {
+    width: "100%",
+    height: 200,
+    marginVertical: 8,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: Colors.primary100,
+    borderRadius: 4,
+  },
+  image: {
+    width: "100%",
+    height: "100%",
+  },
+});
