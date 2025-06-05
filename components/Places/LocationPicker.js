@@ -6,10 +6,28 @@ import {
   useForegroundPermissions,
   PermissionStatus,
 } from "expo-location";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { useEffect, useState } from "react";
 
 const LocationPicker = () => {
+  const [pickedLocation, setPickedLocation] = useState();
+
+  const navigation = useNavigation();
+  const route = useRoute();
+
   const [locationPermissionInformation, requestPermission] =
     useForegroundPermissions();
+
+  const mapPickedLocation = route.params && {
+    lat: route.params.pickedLat,
+    lng: route.params.pickedLng,
+  };
+
+  useEffect(() => {
+    if (mapPickedLocation) {
+      setPickedLocation();
+    }
+  }, []);
 
   async function verifyPermissions() {
     if (
@@ -39,7 +57,20 @@ const LocationPicker = () => {
     console.log(location);
   }
 
-  function pickOnMapHandler() {}
+  function pickOnMapHandler() {
+    navigation.navigate("Map");
+  }
+
+  let locationPreview = <Text>No location picked yet</Text>;
+
+  if (pickedLocation) {
+    imagePreview = (
+      <Image
+        style={styles.image}
+        source={{ uri: getMapPreview(pickedLocation.lat, pickedLocation.lng) }}
+      />
+    );
+  }
 
   return (
     <View>
@@ -72,5 +103,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
+  },
+  image: {
+    width: "100%",
+    height: "100%",
   },
 });
